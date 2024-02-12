@@ -3,6 +3,7 @@ package com.softuni.bookshopsystem;
 import com.softuni.bookshopsystem.services.AuthorService;
 import com.softuni.bookshopsystem.services.BookService;
 import com.softuni.bookshopsystem.services.SeedService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -28,6 +29,7 @@ public class ConsoleRunner implements CommandLineRunner {
     }
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
         this.seedService.seedDatabase();
 
