@@ -1,5 +1,6 @@
 package com.softuni.usersystem.services;
 
+import com.softuni.usersystem.models.Country;
 import com.softuni.usersystem.models.Town;
 import com.softuni.usersystem.repositories.TownRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class TownServiceImpl implements TownService {
     }
 
     @Override
-    public void registerTown(String name, String country) {
+    public void registerTown(String name, Country country) {
         townRepository.save(Town.builder().name(name).country(country).build());
     }
 

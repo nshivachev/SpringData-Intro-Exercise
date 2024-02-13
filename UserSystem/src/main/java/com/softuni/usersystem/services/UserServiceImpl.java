@@ -1,7 +1,6 @@
 package com.softuni.usersystem.services;
 
 import com.softuni.usersystem.models.Album;
-import com.softuni.usersystem.models.Picture;
 import com.softuni.usersystem.models.Town;
 import com.softuni.usersystem.models.User;
 import com.softuni.usersystem.repositories.UserRepository;
@@ -9,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void registerUser(String username, String password, String email, int age, Town bornTown, Town currentTown, List<Album> albums) {
+    public void registerUser(String username, String password, String email, int age, Town bornTown, Town currentTown, List<Album> albums, List<User> friends) {
         userRepository.save(User.builder()
                 .username(username)
                 .password(password)
@@ -29,6 +29,12 @@ public class UserServiceImpl implements UserService {
                 .bornTown(bornTown)
                 .currentTown(currentTown)
                 .albums(albums)
+                .friends(friends)
                 .build());
+    }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 }

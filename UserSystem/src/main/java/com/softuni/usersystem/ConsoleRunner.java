@@ -1,12 +1,7 @@
 package com.softuni.usersystem;
 
-import com.softuni.usersystem.models.Album;
-import com.softuni.usersystem.models.Picture;
-import com.softuni.usersystem.models.Town;
-import com.softuni.usersystem.services.AlbumService;
-import com.softuni.usersystem.services.PictureService;
-import com.softuni.usersystem.services.TownService;
-import com.softuni.usersystem.services.UserService;
+import com.softuni.usersystem.models.*;
+import com.softuni.usersystem.services.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -21,13 +16,15 @@ public class ConsoleRunner implements CommandLineRunner {
     private PictureService pictureService;
     private TownService townService;
     private UserService userService;
+    private CountryService countryService;
 
     @Autowired
-    public ConsoleRunner(AlbumService albumService, PictureService pictureService, TownService townService, UserService userService) {
+    public ConsoleRunner(AlbumService albumService, PictureService pictureService, TownService townService, UserService userService, CountryService countryService) {
         this.albumService = albumService;
         this.pictureService = pictureService;
         this.townService = townService;
         this.userService = userService;
+        this.countryService = countryService;
     }
 
     @Override
@@ -36,11 +33,15 @@ public class ConsoleRunner implements CommandLineRunner {
         pictureService.registerPicture("ProfilePic");
         List<Picture> pictures = List.of(pictureService.findByTitle("ProfilePic").orElseThrow(NoSuchElementException::new));
         albumService.registerAlbum("NikiAlbum", pictures);
-        townService.registerTown("Yambol", "Bulgaria");
-        townService.registerTown("Varna", "Bulgaria");
-        Town bornTown = townService.findByName("Yambol").orElseThrow(NoSuchElementException::new);
-        Town currentTown = townService.findByName("Varna").orElseThrow(NoSuchElementException::new);
+        countryService.registerCountry("Bulgaria");
+        Country bulgaria = countryService.findByName("Bulgaria").orElseThrow(NoSuchElementException::new);
+        townService.registerTown("Yambol", bulgaria);
+        townService.registerTown("Varna", bulgaria);
+        Town yambol = townService.findByName("Yambol").orElseThrow(NoSuchElementException::new);
+        Town varna = townService.findByName("Varna").orElseThrow(NoSuchElementException::new);
         List<Album> albums = List.of(albumService.findByName("NikiAlbum").orElseThrow(NoSuchElementException::new));
-        userService.registerUser("root", "123", "root@abv.bg", 18, bornTown, currentTown, albums);
+        userService.registerUser("Niki", "123", "niki@abv.bg", 33, yambol, varna, albums, null);
+        List<User> friends = List.of(userService.findByUsername("Niki").orElseThrow(NoSuchElementException::new));
+        userService.registerUser("Stefi", "123", "stefi@abv.bg", 3, varna, varna, albums, friends);
     }
 }

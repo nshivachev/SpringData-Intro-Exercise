@@ -16,16 +16,15 @@ public class Town extends BaseEntity {
     @Basic
     private String name;
 
-    @Basic
-    private String country;
+    @ManyToOne
+    @JoinColumn(name = "country_id", referencedColumnName = "id")
+    private Country country;
 
-    @OneToMany(targetEntity = User.class, mappedBy = "bornTown",
-            fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = User.class, mappedBy = "bornTown")
     @Column(name = "born_users")
     private List<User> bornUsers;
 
-    @OneToMany(targetEntity = User.class, mappedBy = "currentTown",
-            fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(targetEntity = User.class, mappedBy = "currentTown")
     @Column(name = "current_users")
     private List<User> currentUsers;
 }

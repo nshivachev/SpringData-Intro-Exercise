@@ -49,7 +49,13 @@ public class User extends BaseEntity {
     @Column(name = "last_name")
     private String lastName;
 
-    @OneToMany(targetEntity = Album.class, mappedBy = "user",
-            fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany
+    @JoinTable(name = "friends",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "friend_id", referencedColumnName = "id")
+    )
+    private List<User> friends;
+
+    @OneToMany(targetEntity = Album.class, mappedBy = "user")
     private List<Album> albums;
 }
