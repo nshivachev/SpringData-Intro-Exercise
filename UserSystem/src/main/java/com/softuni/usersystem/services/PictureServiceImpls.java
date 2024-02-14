@@ -18,7 +18,8 @@ public class PictureServiceImpls implements PictureService {
 
     @Override
     public void registerPicture(String title) {
-        pictureRepository.save(Picture.builder().title(title).build());
+        if (findByTitle(title).isEmpty())
+            pictureRepository.save(Picture.builder().title(title).build());
     }
 
     @Override

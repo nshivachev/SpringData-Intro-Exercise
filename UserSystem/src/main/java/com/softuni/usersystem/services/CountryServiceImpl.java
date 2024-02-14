@@ -18,7 +18,8 @@ public class CountryServiceImpl implements CountryService {
 
     @Override
     public void registerCountry(String name) {
-        countryRepository.save(Country.builder().name(name).build());
+        if (findByName(name).isEmpty())
+            countryRepository.save(Country.builder().name(name).build());
 
     }
 

@@ -7,8 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Component
 public class ConsoleRunner implements CommandLineRunner {
@@ -31,17 +34,49 @@ public class ConsoleRunner implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
         pictureService.registerPicture("ProfilePic");
-        List<Picture> pictures = List.of(pictureService.findByTitle("ProfilePic").orElseThrow(NoSuchElementException::new));
-        albumService.registerAlbum("NikiAlbum", pictures);
+        albumService.registerAlbum("NikiAlbum", getPicturesByTitles("ProfilePic"));
+        albumService.registerAlbum("StefiAlbum", getPicturesByTitles("ProfilePic"));
         countryService.registerCountry("Bulgaria");
-        Country bulgaria = countryService.findByName("Bulgaria").orElseThrow(NoSuchElementException::new);
-        townService.registerTown("Yambol", bulgaria);
-        townService.registerTown("Varna", bulgaria);
-        Town yambol = townService.findByName("Yambol").orElseThrow(NoSuchElementException::new);
-        Town varna = townService.findByName("Varna").orElseThrow(NoSuchElementException::new);
-        List<Album> albums = List.of(albumService.findByName("NikiAlbum").orElseThrow(NoSuchElementException::new));
-        userService.registerUser("Niki", "123", "niki@abv.bg", 33, yambol, varna, albums, null);
-        List<User> friends = List.of(userService.findByUsername("Niki").orElseThrow(NoSuchElementException::new));
-        userService.registerUser("Stefi", "123", "stefi@abv.bg", 3, varna, varna, albums, friends);
+        townService.registerTown("Yambol", getCountryByName("Bulgaria"));
+        townService.registerTown("Varna", getCountryByName("Bulgaria"));
+        userService.registerUser("Niki", "123", "niki@abv.bg", 33, getTownByName("Yambol"), getTownByName("Varna"), getAlbumsByNames("NikiAlbum"), null);
+        userService.registerUser("Stefi", "123", "stefi@abv.bg", 3, getTownByName("Varna"), getTownByName("Yambol"), getAlbumsByNames("StefiAlbum"), getUsersByUsernames("Niki"));
+
+        List<User> users = userService.getAllUsersByEmailProvider("abv.bg");
+
+        if (users.isEmpty()) {
+            System.out.println("No users found with email domain abv.bg");
+            return;
+        }
+
+        users.forEach(user -> System.out.println(user.getEmail()));
+        users.forEach(user -> user.setLastTimeLoggedIn(LocalDateTime.now()));
+        users.forEach(user -> userService.deactivateInactiveUsers(LocalDateTime.now()));
+    }
+
+    private List<Picture> getPicturesByTitles(String... titles) {
+        return Arrays.stream(titles)
+                .map(title -> pictureService.findByTitle(title).orElseThrow(NoSuchElementException::new))
+                .collect(Collectors.toList());
+    }
+
+    private List<Album> getAlbumsByNames(String... names) {
+        return Arrays.stream(names)
+                .map(name -> albumService.findByName(name).orElseThrow(NoSuchElementException::new))
+                .collect(Collectors.toList());
+    }
+
+    private Country getCountryByName(String name) {
+        return countryService.findByName(name).orElseThrow(NoSuchElementException::new);
+    }
+
+    private Town getTownByName(String name) {
+        return townService.findByName(name).orElseThrow(NoSuchElementException::new);
+    }
+
+    private List<User> getUsersByUsernames(String... usernames) {
+        return Arrays.stream(usernames)
+                .map(username -> userService.findByUsername(username).orElseThrow(NoSuchElementException::new))
+                .collect(Collectors.toList());
     }
 }

@@ -20,7 +20,8 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     public void registerAlbum(String name, List<Picture> pictures) {
-        albumRepository.save(Album.builder().name(name).pictures(pictures).build());
+        if (findByName(name).isEmpty())
+            albumRepository.save(Album.builder().name(name).pictures(pictures).build());
     }
 
     @Override

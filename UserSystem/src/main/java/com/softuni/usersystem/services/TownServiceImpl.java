@@ -19,7 +19,7 @@ public class TownServiceImpl implements TownService {
 
     @Override
     public void registerTown(String name, Country country) {
-        townRepository.save(Town.builder().name(name).country(country).build());
+        if (findByName(name).isEmpty()) townRepository.save(Town.builder().name(name).country(country).build());
     }
 
     @Override
